@@ -1,0 +1,56 @@
+ <!DOCTYPE html>
+<html>
+<head>
+    <title>Country Explorer</title>
+</head>
+<body>
+
+<h2>Country Explorer</h2>
+<input type="text" id="searchInput" placeholder="Search countries" oninput="filterCountries()">
+<select id="countrySelect" onchange="showCountryInfo()"></select>
+
+<div id="countryInfo"></div>
+
+<script>
+let countries = [];
+
+async function fetchCountries(){
+    const res = await fetch("https://restcountries.com/v3.1/all");
+    countries = await res.json();
+    populateDropdown(countries);
+}
+
+function populateDropdown(list){
+    const select = document.getElementById("countrySelect");
+    select.innerHTML = "";
+    list.forEach(c => {
+        let option = document.createElement("option");
+        option.value = c.cca3;
+        option.textContent = c.name.common;
+        select.appendChild(option);
+    });
+}
+
+function showCountryInfo(){
+    const code = document.getElementById("countrySelect").value;
+    const country = countries.find(c => c.cca3 === code);
+    const div = document.getElementById("countryInfo");
+    if(country){
+        div.innerHTML = `<img src="${country.flags.png}" width="100">
+                         <p>Capital: ${country.capital ? country.capital[0] : 'N/A'}</p>
+                         <p>Region: ${country.region}</p>
+                         <p>Population: ${country.population}</p>`;
+    }
+}
+
+function filterCountries(){
+    const search = document.getElementById("searchInput").value.toLowerCase();
+    const filtered = countries.filter(c => c.name.common.toLowerCase().includes(search));
+    populateDropdown(filtered);
+}
+
+fetchCountries();
+</script>
+
+</body>
+</html>

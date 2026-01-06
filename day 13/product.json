@@ -1,0 +1,6 @@
+[
+    {"name":"Laptop","price":800,"category":"Electronics"},
+    {"name":"Shoes","price":150,"category":"Fashion"},
+    {"name":"Phone","price":500,"category":"Electronics"},
+    {"name":"Watch","price":200,"category":"Accessories"}
+]

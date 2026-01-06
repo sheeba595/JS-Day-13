@@ -1,0 +1,50 @@
+ <!DOCTYPE html>
+<html>
+<head>
+    <title>Product Catalog</title>
+</head>
+<body>
+
+<h2>Product Catalog</h2>
+
+<input type="number" id="priceFilter" placeholder="Max Price">
+<button onclick="filterByPrice()">Filter</button>
+<button onclick="sortByPrice()">Sort by Price</button>
+
+<ul id="productList"></ul>
+
+<script>
+let products = [];
+
+fetch('products.json')
+.then(res => res.json())
+.then(data => {
+    products = data;
+    showProducts(products);
+});
+
+function showProducts(list){
+    const ul = document.getElementById("productList");
+    ul.innerHTML = "";
+    list.forEach(p => {
+        let li = document.createElement("li");
+        li.textContent = `${p.name} - $${p.price} - ${p.category}`;
+        li.onclick = () => alert(`Product Details:\nName: ${p.name}\nPrice: $${p.price}\nCategory: ${p.category}`);
+        ul.appendChild(li);
+    });
+}
+
+function filterByPrice(){
+    let max = Number(document.getElementById("priceFilter").value);
+    let filtered = products.filter(p => p.price <= max);
+    showProducts(filtered);
+}
+
+function sortByPrice(){
+    let sorted = [...products].sort((a,b) => a.price - b.price);
+    showProducts(sorted);
+}
+</script>
+
+</body>
+</html>

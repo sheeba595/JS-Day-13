@@ -1,0 +1,56 @@
+ <!DOCTYPE html>
+<html>
+<head>
+    <title>Employee Management</title>
+</head>
+<body>
+
+<h2>Employees</h2>
+
+<ul id="employeeList"></ul>
+
+<input type="text" id="name" placeholder="Name">
+<input type="text" id="role" placeholder="Role">
+<input type="number" id="salary" placeholder="Salary">
+<button onclick="addEmployee()">Add Employee</button>
+
+<script>
+let employees = [];
+
+fetch('employees.json')
+.then(res => res.json())
+.then(data => {
+    employees = data;
+    showEmployees();
+});
+
+function showEmployees(){
+    const ul = document.getElementById("employeeList");
+    ul.innerHTML = "";
+    employees.forEach((e,i) => {
+        let li = document.createElement("li");
+        li.textContent = `${e.name} - ${e.role} - $${e.salary}`;
+        let delBtn = document.createElement("button");
+        delBtn.textContent = "Delete";
+        delBtn.onclick = () => {
+            employees.splice(i,1);
+            showEmployees();
+        };
+        li.appendChild(delBtn);
+        ul.appendChild(li);
+    });
+}
+
+function addEmployee(){
+    let name = document.getElementById("name").value;
+    let role = document.getElementById("role").value;
+    let salary = Number(document.getElementById("salary").value);
+    if(name && role && salary){
+        employees.push({name,role,salary});
+        showEmployees();
+    }
+}
+</script>
+
+</body>
+</html>
