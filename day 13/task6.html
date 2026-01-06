@@ -1,12 +1,51 @@
- <!DOCTYPE html>
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
     <title>Country Explorer</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+
+        h2 {
+            text-align: center;
+        }
+
+        input, select {
+            padding: 8px;
+            width: 100%;
+            margin: 10px 0;
+        }
+
+        #countryInfo {
+            background: white;
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        img {
+            width: 120px;
+            border: 1px solid #ccc;
+        }
+    </style>
 </head>
+
 <body>
 
-<h2>Country Explorer</h2>
-<input type="text" id="searchInput" placeholder="Search countries" oninput="filterCountries()">
+<h2>🌍 Country Explorer</h2>
+
+<input 
+    type="text" 
+    id="searchInput" 
+    placeholder="Search countries..." 
+    oninput="filterCountries()">
+
 <select id="countrySelect" onchange="showCountryInfo()"></select>
 
 <div id="countryInfo"></div>
@@ -14,39 +53,49 @@
 <script>
 let countries = [];
 
-async function fetchCountries(){
+async function fetchCountries() {
     const res = await fetch("https://restcountries.com/v3.1/all");
     countries = await res.json();
     populateDropdown(countries);
+    showCountryInfo(); // ✅ show first country automatically
 }
 
-function populateDropdown(list){
+function populateDropdown(list) {
     const select = document.getElementById("countrySelect");
     select.innerHTML = "";
-    list.forEach(c => {
-        let option = document.createElement("option");
-        option.value = c.cca3;
-        option.textContent = c.name.common;
+
+    list.forEach((country, index) => {
+        const option = document.createElement("option");
+        option.value = country.cca3;
+        option.textContent = country.name.common;
+        if(index === 0) option.selected = true;
         select.appendChild(option);
     });
 }
 
-function showCountryInfo(){
+function showCountryInfo() {
     const code = document.getElementById("countrySelect").value;
     const country = countries.find(c => c.cca3 === code);
     const div = document.getElementById("countryInfo");
-    if(country){
-        div.innerHTML = `<img src="${country.flags.png}" width="100">
-                         <p>Capital: ${country.capital ? country.capital[0] : 'N/A'}</p>
-                         <p>Region: ${country.region}</p>
-                         <p>Population: ${country.population}</p>`;
-    }
+
+    if (!country) return;
+
+    div.innerHTML = `
+        <img src="${country.flags.png}" alt="Flag">
+        <h3>${country.name.common}</h3>
+        <p><strong>Capital:</strong> ${country.capital ? country.capital[0] : "N/A"}</p>
+        <p><strong>Region:</strong> ${country.region}</p>
+        <p><strong>Population:</strong> ${country.population.toLocaleString()}</p>
+    `;
 }
 
-function filterCountries(){
-    const search = document.getElementById("searchInput").value.toLowerCase();
-    const filtered = countries.filter(c => c.name.common.toLowerCase().includes(search));
+function filterCountries() {
+    const searchText = document.getElementById("searchInput").value.toLowerCase();
+    const filtered = countries.filter(c =>
+        c.name.common.toLowerCase().includes(searchText)
+    );
     populateDropdown(filtered);
+    showCountryInfo();
 }
 
 fetchCountries();
